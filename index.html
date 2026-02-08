@@ -6,7 +6,6 @@
 <title>Super Bowl LX Party Quiz</title>
 
 <style>
-/* ---------- THEME ---------- */
 :root{
   --bg:#0b1020;
   --card:rgba(255,255,255,.08);
@@ -15,9 +14,8 @@
   --shadow:0 18px 50px rgba(0,0,0,.45);
   --radius:18px;
 
-  /* dynamic team colors */
-  --a1:#002244;   /* navy */
-  --a2:#69BE28;   /* SEA green default */
+  --a1:#002244;
+  --a2:#69BE28;   /* SEA default */
   --a3:#A5ACAF;
   --accent:#69BE28;
   --danger:#C60C30;
@@ -77,6 +75,16 @@ body{
 }
 .teamBtn.selected{box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 30%,transparent)}
 
+input{
+  width:100%;
+  padding:14px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.15);
+  background:rgba(0,0,0,.25);
+  color:var(--text);
+  font-size:16px;
+}
+
 .options{display:flex;flex-direction:column;gap:10px}
 .opt{
   padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.15);
@@ -89,12 +97,12 @@ body{
   padding:14px 18px;background:rgba(0,0,0,.2);border-top:1px solid rgba(255,255,255,.1)
 }
 button{
-  padding:12px 16px;border-radius:14px;border:none;cursor:pointer;font-weight:600
+  padding:12px 16px;border-radius:14px;border:none;cursor:pointer;font-weight:700
 }
 .primary{background:linear-gradient(90deg,var(--a2),var(--a3),var(--danger));color:#001}
 button:disabled{opacity:.5}
 
-.review{margin-top:14px;max-height:300px;overflow:auto}
+.review{margin-top:14px;max-height:320px;overflow:auto}
 .reviewItem{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1)}
 .small{font-size:12px;color:var(--muted)}
 .ok{color:#7CFF6B}
@@ -130,6 +138,7 @@ button:disabled{opacity:.5}
     <div class="teamBtn" id="btnNE">New England Patriots</div>
   </div>
   <input id="playerName" placeholder="Your name"/>
+  <p class="small" id="startHint">Tip: tap Start (or press Enter)</p>
 </section>
 
 <section class="screen" id="screenQuiz">
@@ -140,14 +149,17 @@ button:disabled{opacity:.5}
 
 <section class="screen" id="screenResults">
   <h2 id="resultTitle"></h2>
-  <p id="resultSubtitle"></p>
+  <p class="small" id="resultSubtitle"></p>
   <p><b id="scoreLine"></b></p>
-  <button id="viewBoardBtn">View Shared Scoreboard</button>
+  <p class="small" id="saveStatus"></p>
+  <button class="primary" id="viewBoardBtn">View Shared Scoreboard</button>
   <div class="review" id="review"></div>
 </section>
 
 <section class="screen" id="screenBoard">
   <h2>🏆 Live Scoreboard</h2>
+  <p class="small">Pulls from Google Sheet (shared across all phones).</p>
+  <button id="refreshBtn">Refresh</button>
   <div class="review" id="boardList"></div>
 </section>
 
@@ -162,22 +174,21 @@ button:disabled{opacity:.5}
 </div>
 
 <script>
-/* ================= CONFIG ================= */
 const SCOREBOARD_ENDPOINT =
 "https://script.google.com/macros/s/AKfycbwvJFpBvHS2sgwU_mAu_BtO1DMRkNcU-b-RV0xbVcj_nBdRWRNrgcNbYySqnwXHDBaP/exec";
 
-/* ================= QUIZ ================= */
+// Keep 10 for now (you can expand to 20 after we confirm scoreboard works)
 const QUESTIONS=[
-{q:"Super Bowl LX is played on what date?",o:["Feb 2","Feb 8","Feb 14","Jan 26"],c:1},
-{q:"Which stadium hosts Super Bowl LX?",o:["SoFi","Levi’s","Allegiant","AT&T"],c:1},
-{q:"Super Bowl LX city?",o:["San Francisco","Santa Clara","Oakland","San Jose"],c:1},
-{q:"Kickoff time (ET)?",o:["4:25","6:30","8:15","7:00"],c:1},
-{q:"Broadcast network?",o:["FOX","CBS","NBC","ESPN"],c:2},
-{q:"Matchup?",o:["Seahawks vs Patriots","Chiefs vs 49ers","Rams vs Bills","Packers vs Dolphins"],c:0},
-{q:"Roman numeral LX equals?",o:["50","55","60","65"],c:2},
-{q:"Which conference are Seahawks?",o:["AFC","NFC","ACC","SEC"],c:1},
-{q:"Which conference are Patriots?",o:["AFC","NFC","Big East","Pac-12"],c:0},
-{q:"How many points for a TD?",o:["3","5","6","7"],c:2}
+  {q:"Super Bowl LX is played on what date?",o:["Feb 2","Feb 8","Feb 14","Jan 26"],c:1},
+  {q:"Which stadium hosts Super Bowl LX?",o:["SoFi","Levi’s","Allegiant","AT&T"],c:1},
+  {q:"Super Bowl LX city?",o:["San Francisco","Santa Clara","Oakland","San Jose"],c:1},
+  {q:"Kickoff time (ET)?",o:["4:25","6:30","8:15","7:00"],c:1},
+  {q:"Broadcast network?",o:["FOX","CBS","NBC","ESPN"],c:2},
+  {q:"Matchup?",o:["Seahawks vs Patriots","Chiefs vs 49ers","Rams vs Bills","Packers vs Dolphins"],c:0},
+  {q:"Roman numeral LX equals?",o:["50","55","60","65"],c:2},
+  {q:"Which conference are Seahawks?",o:["AFC","NFC","ACC","SEC"],c:1},
+  {q:"Which conference are Patriots?",o:["AFC","NFC","Big East","Pac-12"],c:0},
+  {q:"Red zone means inside the opponent’s…",o:["10","15","20","25"],c:2}
 ];
 
 let state={name:"",team:"SEA",idx:0,answers:[],start:0};
@@ -186,76 +197,167 @@ const qs=id=>document.getElementById(id);
 const show=id=>["screenStart","screenQuiz","screenResults","screenBoard"].forEach(s=>qs(s).classList.toggle("active",s===id));
 
 function applyTeam(t){
-state.team=t;
-if(t==="SEA"){document.documentElement.style.setProperty("--accent","#69BE28")}
-else{document.documentElement.style.setProperty("--accent","#C60C30")}
-qs("btnSEA").classList.toggle("selected",t==="SEA");
-qs("btnNE").classList.toggle("selected",t==="NE");
+  state.team=t;
+  if(t==="SEA"){ document.documentElement.style.setProperty("--accent","#69BE28"); qs("teamSub").textContent="Seahawks vibe ✅"; }
+  else{ document.documentElement.style.setProperty("--accent","#C60C30"); qs("teamSub").textContent="Patriots vibe ✅"; }
+  qs("btnSEA").classList.toggle("selected",t==="SEA");
+  qs("btnNE").classList.toggle("selected",t==="NE");
+  qs("whoPill").textContent = state.name ? `${state.name} · ${state.team}` : `Ready · ${state.team}`;
 }
 
 qs("btnSEA").onclick=()=>applyTeam("SEA");
 qs("btnNE").onclick=()=>applyTeam("NE");
 
 function render(){
-const q=QUESTIONS[state.idx];
-qs("qnum").textContent=`Question ${state.idx+1} of ${QUESTIONS.length}`;
-qs("qtext").textContent=q.q;
-qs("options").innerHTML="";
-q.o.forEach((t,i)=>{
-const d=document.createElement("div");
-d.className="opt"+(state.answers[state.idx]===i?" selected":"");
-d.textContent=t;
-d.onclick=()=>{state.answers[state.idx]=i;render()};
-qs("options").appendChild(d);
-});
-qs("countPill").textContent=`${state.idx+1}/${QUESTIONS.length}`;
-qs("bar").style.width=`${(state.idx/QUESTIONS.length)*100}%`;
-qs("nextBtn").textContent=state.idx===QUESTIONS.length-1?"Finish":"Next";
-qs("backBtn").disabled=state.idx===0;
+  const q=QUESTIONS[state.idx];
+  qs("qnum").textContent=`Question ${state.idx+1} of ${QUESTIONS.length}`;
+  qs("qtext").textContent=q.q;
+  qs("options").innerHTML="";
+  q.o.forEach((t,i)=>{
+    const d=document.createElement("div");
+    d.className="opt"+(state.answers[state.idx]===i?" selected":"");
+    d.textContent=t;
+    d.onclick=()=>{ state.answers[state.idx]=i; render(); };
+    qs("options").appendChild(d);
+  });
+  qs("countPill").textContent=`${state.idx+1}/${QUESTIONS.length}`;
+  qs("bar").style.width=`${(state.idx/QUESTIONS.length)*100}%`;
+  qs("nextBtn").textContent=state.idx===QUESTIONS.length-1?"Finish":"Next";
+  qs("backBtn").disabled=state.idx===0;
 }
 
-async function saveScore(score,time){
-await fetch(SCOREBOARD_ENDPOINT,{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({name:state.name,team:state.team,score,timeMs:time})
-});
+function jsonp(url){
+  return new Promise((resolve,reject)=>{
+    const cb = "cb_" + Math.random().toString(36).slice(2);
+    const script = document.createElement("script");
+    const timeout = setTimeout(()=>{
+      cleanup();
+      reject(new Error("JSONP timeout"));
+    }, 8000);
+
+    function cleanup(){
+      clearTimeout(timeout);
+      try { delete window[cb]; } catch {}
+      script.remove();
+    }
+
+    window[cb] = (data)=>{
+      cleanup();
+      resolve(data);
+    };
+
+    script.onerror = ()=>{
+      cleanup();
+      reject(new Error("JSONP load failed"));
+    };
+
+    const sep = url.includes("?") ? "&" : "?";
+    script.src = url + sep + "callback=" + encodeURIComponent(cb);
+    document.body.appendChild(script);
+  });
+}
+
+async function saveScore(score,timeMs){
+  const url = SCOREBOARD_ENDPOINT
+    + "?action=add"
+    + "&name=" + encodeURIComponent(state.name)
+    + "&team=" + encodeURIComponent(state.team)
+    + "&score=" + encodeURIComponent(score)
+    + "&timeMs=" + encodeURIComponent(timeMs);
+
+  return jsonp(url);
 }
 
 async function loadBoard(){
-const r=await fetch(SCOREBOARD_ENDPOINT);
-const d=await r.json();
-qs("boardList").innerHTML=d.leaderboard.map((e,i)=>`
-<div class="reviewItem">
-<b>${i+1}. ${e.name} (${e.team})</b>
-<div class="small">${e.score}/10</div>
-</div>`).join("");
+  qs("boardList").innerHTML = `<div class="reviewItem"><b>Loading…</b><div class="small">If this never loads, redeploy Apps Script.</div></div>`;
+  const data = await jsonp(SCOREBOARD_ENDPOINT + "?action=list&limit=50");
+  if(!data || !data.ok) throw new Error((data && data.error) || "Bad response");
+
+  const list = data.leaderboard || [];
+  if(!list.length){
+    qs("boardList").innerHTML = `<div class="reviewItem"><b>No scores yet.</b><div class="small">Finish the quiz once, then refresh.</div></div>`;
+    return;
+  }
+
+  qs("boardList").innerHTML = list.map((e,i)=>`
+    <div class="reviewItem">
+      <b>${i+1}. ${escapeHtml(e.name || "Anonymous")} (${escapeHtml(e.team || "NA")})</b>
+      <div class="small">${Number(e.score)||0}/${QUESTIONS.length} · ${Math.round((Number(e.timeMs)||0)/1000)}s</div>
+      <div class="small">${escapeHtml(String(e.timestamp||""))}</div>
+    </div>
+  `).join("");
 }
 
-qs("nextBtn").onclick=()=>{
-if(qs("screenStart").classList.contains("active")){
-state.name=qs("playerName").value||"Anonymous";
-state.idx=0;state.answers=[];state.start=Date.now();
-show("screenQuiz");render();return;
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
 }
-if(qs("screenQuiz").classList.contains("active")){
-if(state.answers[state.idx]==null)return;
-if(state.idx===QUESTIONS.length-1){
-const score=state.answers.filter((a,i)=>a===QUESTIONS[i].c).length;
-const time=Date.now()-state.start;
-saveScore(score,time);
-qs("resultTitle").textContent=`Done, ${state.name}!`;
-qs("scoreLine").textContent=`Score: ${score}/${QUESTIONS.length}`;
-show("screenResults");
-return;
-}
-state.idx++;render();
-}
+
+qs("nextBtn").onclick=async ()=>{
+  if(qs("screenStart").classList.contains("active")){
+    state.name = (qs("playerName").value || "").trim() || "Anonymous";
+    state.idx=0; state.answers=[]; state.start=Date.now();
+    applyTeam(state.team);
+    show("screenQuiz"); render();
+    return;
+  }
+
+  if(qs("screenQuiz").classList.contains("active")){
+    if(state.answers[state.idx]==null) return;
+
+    if(state.idx===QUESTIONS.length-1){
+      const score = state.answers.filter((a,i)=>a===QUESTIONS[i].c).length;
+      const timeMs = Date.now()-state.start;
+
+      qs("resultTitle").textContent = `Done, ${state.name}!`;
+      qs("resultSubtitle").textContent = `Team: ${state.team}.`;
+      qs("scoreLine").textContent = `Score: ${score}/${QUESTIONS.length}`;
+      qs("saveStatus").textContent = "Saving to shared scoreboard…";
+      show("screenResults");
+
+      try{
+        const out = await saveScore(score,timeMs);
+        qs("saveStatus").textContent = (out && out.ok) ? "Saved ✅" : "Save failed (check Apps Script deploy settings).";
+      }catch(e){
+        qs("saveStatus").textContent = "Save failed (redeploy Apps Script as Web app: Anyone).";
+      }
+
+      // simple answer review
+      qs("review").innerHTML = QUESTIONS.map((q,i)=>{
+        const picked = state.answers[i];
+        const ok = picked === q.c;
+        return `
+          <div class="reviewItem">
+            <b>${i+1}. ${escapeHtml(q.q)}</b>
+            <div class="small">Your answer: <span class="${ok?"ok":"no"}"><b>${escapeHtml(q.o[picked])}</b></span></div>
+            <div class="small">Correct: <span class="ok"><b>${escapeHtml(q.o[q.c])}</b></span></div>
+          </div>
+        `;
+      }).join("");
+
+      return;
+    }
+
+    state.idx++; render();
+  }
 };
 
-qs("backBtn").onclick=()=>{state.idx--;render()};
-qs("viewBoardBtn").onclick=()=>{show("screenBoard");loadBoard()};
-</script>
+qs("backBtn").onclick=()=>{ if(state.idx>0){ state.idx--; render(); } };
 
+qs("viewBoardBtn").onclick=async ()=>{
+  show("screenBoard");
+  try{ await loadBoard(); }catch(e){
+    qs("boardList").innerHTML = `<div class="reviewItem"><b>Couldn’t load scoreboard.</b><div class="small">${escapeHtml(String(e))}</div></div>`;
+  }
+};
+
+qs("refreshBtn").onclick=async ()=>{ try{ await loadBoard(); }catch(e){} };
+
+qs("playerName").addEventListener("keydown", (e)=>{
+  if(e.key==="Enter"){ e.preventDefault(); qs("nextBtn").click(); }
+});
+
+// init
+applyTeam("SEA");
+</script>
 </body>
 </html>
