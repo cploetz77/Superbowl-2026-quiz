@@ -1,860 +1,261 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Super Bowl LX Party Quiz</title>
-  <style>
-    :root{
-      /* Default theme = Seahawks (can be toggled to Patriots) */
-      --bg: #0b1020;
-      --card: rgba(255,255,255,0.08);
-      --card2: rgba(255,255,255,0.12);
-      --text: rgba(255,255,255,0.92);
-      --muted: rgba(255,255,255,0.68);
-      --ring: rgba(53,208,199,0.35);
-      --shadow: 0 18px 50px rgba(0,0,0,0.45);
-      --radius: 18px;
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Super Bowl LX Party Quiz</title>
 
-      /* Dynamic “team” colors */
-      --teamName: "Seahawks";
-      --a1: #002244;   /* navy */
-      --a2: #69BE28;   /* action green */
-      --a3: #A5ACAF;   /* wolf gray */
-      --accent: #69BE28;
-      --danger: #C60C30;
-    }
+<style>
+/* ---------- THEME ---------- */
+:root{
+  --bg:#0b1020;
+  --card:rgba(255,255,255,.08);
+  --text:rgba(255,255,255,.95);
+  --muted:rgba(255,255,255,.7);
+  --shadow:0 18px 50px rgba(0,0,0,.45);
+  --radius:18px;
 
-    *{ box-sizing:border-box; }
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      background:
-        radial-gradient(1200px 800px at 12% 10%, color-mix(in srgb, var(--a2) 28%, transparent), transparent 60%),
-        radial-gradient(1100px 760px at 88% 18%, color-mix(in srgb, var(--danger) 22%, transparent), transparent 60%),
-        radial-gradient(900px 700px at 50% 90%, rgba(255,255,255,0.06), transparent 55%),
-        var(--bg);
-      color: var(--text);
-      min-height:100vh;
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      padding:22px;
-    }
+  /* dynamic team colors */
+  --a1:#002244;   /* navy */
+  --a2:#69BE28;   /* SEA green default */
+  --a3:#A5ACAF;
+  --accent:#69BE28;
+  --danger:#C60C30;
+}
 
-    .wrap{ width:min(820px, 100%); }
-    .card{
-      background: linear-gradient(180deg, var(--card), rgba(255,255,255,0.05));
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
-    }
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+  background:
+    radial-gradient(1200px 800px at 15% 15%, color-mix(in srgb,var(--a2) 25%,transparent), transparent 60%),
+    radial-gradient(1200px 800px at 85% 20%, color-mix(in srgb,var(--danger) 22%,transparent), transparent 60%),
+    var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
 
-    .topbar{
-      padding:16px 18px;
-      display:flex;
-      gap:12px;
-      align-items:center;
-      justify-content:space-between;
-      border-bottom: 1px solid rgba(255,255,255,0.10);
-      background: rgba(0,0,0,0.18);
-    }
-    .brand{
-      display:flex; align-items:center; gap:10px; min-width:0;
-    }
+.wrap{width:min(820px,100%)}
+.card{
+  background:linear-gradient(180deg,var(--card),rgba(255,255,255,.05));
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+}
 
-    .logo{
-      width:36px; height:36px; border-radius:14px;
-      border:1px solid rgba(255,255,255,0.18);
-      box-shadow: 0 0 0 6px rgba(255,255,255,0.06);
-      background:
-        radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--a2) 90%, white), color-mix(in srgb, var(--a2) 25%, transparent) 60%),
-        radial-gradient(circle at 70% 70%, color-mix(in srgb, var(--danger) 75%, transparent), color-mix(in srgb, var(--danger) 12%, transparent) 60%),
-        linear-gradient(135deg, color-mix(in srgb, var(--a1) 95%, black), color-mix(in srgb, var(--a1) 35%, transparent));
-    }
+.topbar{
+  padding:14px 18px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  background:rgba(0,0,0,.2);
+  border-bottom:1px solid rgba(255,255,255,.1);
+}
+.brand{display:flex;gap:10px;align-items:center}
+.logo{
+  width:36px;height:36px;border-radius:14px;
+  background:linear-gradient(135deg,var(--a2),var(--danger));
+}
+.meta{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--muted)}
+.pill{padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.1)}
+.progress{width:160px;height:8px;background:rgba(255,255,255,.1);border-radius:999px;overflow:hidden}
+.bar{height:100%;width:0%;background:linear-gradient(90deg,var(--a2),var(--a3),var(--danger));transition:width .2s}
 
-    .brand h1{
-      font-size:13px; margin:0; letter-spacing:0.10em; text-transform:uppercase;
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    }
-    .brand .sub{
-      margin:2px 0 0; font-size:12px; color:var(--muted);
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
-    }
+.body{padding:20px}
+.screen{display:none}
+.screen.active{display:block}
 
-    .meta{
-      font-size:12px; color: var(--muted);
-      display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;
-    }
-    .pill{
-      padding:6px 10px; border-radius:999px;
-      background: rgba(255,255,255,0.08);
-      border:1px solid rgba(255,255,255,0.12);
-    }
-    .progress{
-      height:8px; width:180px; border-radius:999px;
-      background: rgba(255,255,255,0.08);
-      overflow:hidden;
-      border:1px solid rgba(255,255,255,0.12);
-    }
-    .bar{
-      height:100%;
-      width:0%;
-      background: linear-gradient(90deg,
-        color-mix(in srgb, var(--a2) 95%, white),
-        color-mix(in srgb, var(--a3) 70%, transparent),
-        color-mix(in srgb, var(--danger) 85%, transparent)
-      );
-      transition: width 260ms ease;
-    }
+.teamPick{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.teamBtn{
+  padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.15);
+  background:rgba(0,0,0,.25);cursor:pointer
+}
+.teamBtn.selected{box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 30%,transparent)}
 
-    .body{ padding:20px; }
-    .screen{ display:none; animation: fadeIn 160ms ease; }
-    .screen.active{ display:block; }
-    @keyframes fadeIn{ from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);} }
+.options{display:flex;flex-direction:column;gap:10px}
+.opt{
+  padding:14px;border-radius:14px;border:1px solid rgba(255,255,255,.15);
+  background:rgba(0,0,0,.25);cursor:pointer
+}
+.opt.selected{box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 30%,transparent)}
 
-    .title{ font-size:26px; margin:0 0 8px; }
-    .subtitle{ margin:0 0 16px; color:var(--muted); line-height:1.45; }
+.footer{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 18px;background:rgba(0,0,0,.2);border-top:1px solid rgba(255,255,255,.1)
+}
+button{
+  padding:12px 16px;border-radius:14px;border:none;cursor:pointer;font-weight:600
+}
+.primary{background:linear-gradient(90deg,var(--a2),var(--a3),var(--danger));color:#001}
+button:disabled{opacity:.5}
 
-    .teamPick{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap:10px;
-      margin: 14px 0 8px;
-    }
-    .teamBtn{
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,0.14);
-      background: rgba(0,0,0,0.22);
-      padding:14px;
-      cursor:pointer;
-      text-align:left;
-      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
-    }
-    .teamBtn:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.22); }
-    .teamBtn .t1{ font-weight:800; }
-    .teamBtn .t2{ margin-top:4px; color: var(--muted); font-size:12px; }
-    .teamBtn.selected{
-      border-color: color-mix(in srgb, var(--accent) 60%, rgba(255,255,255,0.16));
-      box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 28%, transparent);
-    }
-
-    .field{ display:flex; flex-direction:column; gap:8px; margin-top:12px; }
-    label{ font-size:12px; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase; }
-    input[type="text"]{
-      width:100%;
-      padding:14px 14px;
-      border-radius:14px;
-      border:1px solid rgba(255,255,255,0.14);
-      background: rgba(0,0,0,0.25);
-      color: var(--text);
-      outline:none;
-      box-shadow: 0 0 0 0 rgba(0,0,0,0);
-      transition: box-shadow 160ms ease, border-color 160ms ease;
-      font-size:16px;
-    }
-    input[type="text"]:focus{
-      border-color: color-mix(in srgb, var(--accent) 55%, rgba(255,255,255,0.14));
-      box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 28%, transparent);
-    }
-
-    .qnum{
-      font-size:12px; color: var(--muted); letter-spacing:0.08em; text-transform:uppercase;
-      margin-bottom:8px;
-    }
-    .qtext{ font-size:22px; margin:0 0 14px; line-height:1.25; }
-
-    .options{ display:flex; flex-direction:column; gap:10px; margin-top:8px; }
-    .opt{
-      display:flex;
-      align-items:flex-start;
-      gap:10px;
-      padding:14px 14px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,0.14);
-      background: rgba(0,0,0,0.22);
-      cursor:pointer;
-      user-select:none;
-      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease, box-shadow 120ms ease;
-      position:relative;
-      overflow:hidden;
-    }
-    .opt:hover{ transform: translateY(-1px); border-color: rgba(255,255,255,0.22); background: rgba(255,255,255,0.06); }
-    .opt.selected{
-      border-color: color-mix(in srgb, var(--accent) 55%, rgba(255,255,255,0.22));
-      box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 20%, transparent);
-      background: rgba(255,255,255,0.08);
-    }
-    .opt input{ margin-top:3px; accent-color: var(--accent); }
-    .opt .txt{ line-height:1.3; }
-    .hint{ margin-top:12px; font-size:13px; color: var(--muted); min-height:18px; }
-
-    .footer{
-      display:flex;
-      gap:10px;
-      align-items:center;
-      justify-content:space-between;
-      padding:16px 20px;
-      border-top:1px solid rgba(255,255,255,0.10);
-      background: rgba(0,0,0,0.18);
-      flex-wrap:wrap;
-    }
-    .tiny{ font-size:12px; color:var(--muted); }
-    .btns{ display:flex; gap:10px; align-items:center; }
-
-    button{
-      border:0;
-      border-radius:14px;
-      padding:12px 14px;
-      font-weight:650;
-      cursor:pointer;
-      color: var(--text);
-      background: rgba(255,255,255,0.10);
-      border:1px solid rgba(255,255,255,0.14);
-      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease, opacity 120ms ease;
-    }
-    button:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.20); }
-    button:disabled{ opacity:0.45; cursor:not-allowed; transform:none; }
-
-    .primary{
-      background: linear-gradient(90deg,
-        color-mix(in srgb, var(--accent) 95%, white),
-        color-mix(in srgb, var(--a3) 65%, transparent),
-        color-mix(in srgb, var(--danger) 65%, transparent)
-      );
-      border-color: color-mix(in srgb, var(--accent) 40%, rgba(255,255,255,0.16));
-      color: rgba(10,14,28,0.95);
-    }
-    .primary:hover{
-      background: linear-gradient(90deg,
-        color-mix(in srgb, var(--accent) 98%, white),
-        color-mix(in srgb, var(--a3) 70%, transparent),
-        color-mix(in srgb, var(--danger) 72%, transparent)
-      );
-    }
-
-    .resultsGrid{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:12px;
-      margin-top:14px;
-    }
-    .stat{
-      padding:14px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,0.14);
-      background: rgba(0,0,0,0.22);
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:12px;
-    }
-    .stat strong{ font-size:16px; }
-    .stat span{ color:var(--muted); font-size:13px; }
-
-    .review{
-      margin-top:14px;
-      padding:14px;
-      border-radius:16px;
-      border:1px solid rgba(255,255,255,0.14);
-      background: rgba(0,0,0,0.22);
-      max-height: 300px;
-      overflow:auto;
-    }
-    .reviewItem{
-      padding:10px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.10);
-    }
-    .reviewItem:last-child{ border-bottom:0; }
-    .reviewItem .small{ font-size:12px; color:var(--muted); margin-top:4px; line-height:1.35; }
-    .ok{ color: color-mix(in srgb, var(--accent) 92%, white); }
-    .no{ color: color-mix(in srgb, var(--danger) 90%, white); }
-
-    a{ color: color-mix(in srgb, var(--accent) 92%, white); }
-  </style>
+.review{margin-top:14px;max-height:300px;overflow:auto}
+.reviewItem{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+.small{font-size:12px;color:var(--muted)}
+.ok{color:#7CFF6B}
+.no{color:#FF7C7C}
+</style>
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="card">
-      <div class="topbar">
-        <div class="brand">
-          <div class="logo" aria-hidden="true"></div>
-          <div style="min-width:0;">
-            <h1>Super Bowl LX Party Quiz</h1>
-            <div class="sub" id="teamSub">Pick a team vibe 👇</div>
-          </div>
-        </div>
+<div class="wrap">
+<div class="card">
 
-        <div class="meta">
-          <div class="pill" id="whoPill">Ready</div>
-          <div class="progress" aria-label="Progress">
-            <div class="bar" id="bar"></div>
-          </div>
-          <div class="pill" id="countPill">0/20</div>
-        </div>
-      </div>
-
-      <div class="body">
-        <!-- START -->
-        <section class="screen active" id="screenStart">
-          <h2 class="title">Pick your side, then talk your trash 🏈</h2>
-          <p class="subtitle">
-            This quiz is themed for <b>Super Bowl LX (2026)</b>.
-            Choose your team vibe (changes the colors), enter your name, and hit Start.
-          </p>
-
-          <div class="teamPick">
-            <div class="teamBtn selected" id="btnSEA" role="button" tabindex="0">
-              <div class="t1">Seattle Seahawks</div>
-              <div class="t2">Navy + action green energy</div>
-            </div>
-            <div class="teamBtn" id="btnNE" role="button" tabindex="0">
-              <div class="t1">New England Patriots</div>
-              <div class="t2">Navy + red flex mode</div>
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="playerName">Your name (for the scoreboard)</label>
-            <input id="playerName" type="text" placeholder="e.g., Chris / Wing Captain / Aunt Linda" maxlength="30" />
-            <div class="tiny">Tip: tap <b>Start</b> (or press <b>Enter</b>).</div>
-          </div>
-        </section>
-
-        <!-- QUIZ -->
-        <section class="screen" id="screenQuiz">
-          <div class="qnum" id="qnum">Question 1 of 20</div>
-          <h3 class="qtext" id="qtext">Question text</h3>
-          <div class="options" id="options"></div>
-          <div class="hint" id="hint"></div>
-        </section>
-
-        <!-- RESULTS -->
-        <section class="screen" id="screenResults">
-          <h2 class="title" id="resultTitle">You finished!</h2>
-          <p class="subtitle" id="resultSubtitle"></p>
-
-          <div class="resultsGrid">
-            <div class="stat">
-              <div>
-                <strong id="scoreLine">Score: 0/20</strong><br />
-                <span id="gradeLine">Grade: —</span>
-              </div>
-              <div class="pill" id="timeLine">Time: —</div>
-            </div>
-
-            <div class="stat">
-              <div>
-                <strong>Share</strong><br />
-                <span>Copy a message to flex (or self-roast).</span>
-              </div>
-              <button class="primary" id="copyBtn">Copy</button>
-            </div>
-
-            <div class="stat">
-              <div>
-                <strong>Local scoreboard</strong><br />
-                <span>Saved on this device (perfect for the host’s phone).</span>
-              </div>
-              <button id="viewBoardBtn">View</button>
-            </div>
-          </div>
-
-          <div class="review" id="review"></div>
-
-          <div class="tiny" style="margin-top:12px;">
-            Host tip: keep this page open on your phone and hit “View” to show the scoreboard.
-          </div>
-        </section>
-
-        <!-- SCOREBOARD -->
-        <section class="screen" id="screenBoard">
-          <h2 class="title">Scoreboard 🏆</h2>
-          <p class="subtitle">Top scores on <b>this device</b>. (Want a true shared scoreboard? Tell me and I’ll add a free backend.)</p>
-          <div class="review" id="boardList"></div>
-          <div class="tiny" style="margin-top:12px;">
-            <button class="danger" id="clearBoardBtn" style="background: rgba(255,92,122,0.18); border-color: rgba(255,92,122,0.32);">
-              Clear scoreboard
-            </button>
-          </div>
-        </section>
-      </div>
-
-      <div class="footer">
-        <div class="tiny" id="footerHint">Ready when you are.</div>
-        <div class="btns">
-          <button id="backBtn" disabled>Back</button>
-          <button class="primary" id="nextBtn">Start</button>
-        </div>
-      </div>
+<div class="topbar">
+  <div class="brand">
+    <div class="logo"></div>
+    <div>
+      <strong>Super Bowl LX Quiz</strong><br/>
+      <span class="small" id="teamSub">Pick your team</span>
     </div>
   </div>
+  <div class="meta">
+    <div class="pill" id="whoPill">Ready</div>
+    <div class="progress"><div class="bar" id="bar"></div></div>
+    <div class="pill" id="countPill">0/20</div>
+  </div>
+</div>
+
+<div class="body">
+
+<section class="screen active" id="screenStart">
+  <h2>Pick your side 🏈</h2>
+  <div class="teamPick">
+    <div class="teamBtn selected" id="btnSEA">Seattle Seahawks</div>
+    <div class="teamBtn" id="btnNE">New England Patriots</div>
+  </div>
+  <input id="playerName" placeholder="Your name"/>
+</section>
+
+<section class="screen" id="screenQuiz">
+  <div class="small" id="qnum"></div>
+  <h3 id="qtext"></h3>
+  <div class="options" id="options"></div>
+</section>
+
+<section class="screen" id="screenResults">
+  <h2 id="resultTitle"></h2>
+  <p id="resultSubtitle"></p>
+  <p><b id="scoreLine"></b></p>
+  <button id="viewBoardBtn">View Shared Scoreboard</button>
+  <div class="review" id="review"></div>
+</section>
+
+<section class="screen" id="screenBoard">
+  <h2>🏆 Live Scoreboard</h2>
+  <div class="review" id="boardList"></div>
+</section>
+
+</div>
+
+<div class="footer">
+  <button id="backBtn" disabled>Back</button>
+  <button class="primary" id="nextBtn">Start</button>
+</div>
+
+</div>
+</div>
 
 <script>
-(() => {
-  // ====== Super Bowl LX (2026) quiz (20 factual questions) ======
-  // correct is the index in options[]
-  const QUESTIONS = [
-    { q: "Super Bowl LX is played on what date?", options: ["Feb 2, 2026", "Feb 8, 2026", "Feb 14, 2026", "Jan 26, 2026"], correct: 1, why: "Super Bowl LX is scheduled for February 8, 2026." },
-    { q: "Which stadium is hosting Super Bowl LX?", options: ["SoFi Stadium", "Levi’s Stadium", "Allegiant Stadium", "AT&T Stadium"], correct: 1, why: "The game is at Levi’s Stadium." },
-    { q: "Super Bowl LX is in which city?", options: ["San Francisco, CA", "Santa Clara, CA", "Oakland, CA", "San Jose, CA"], correct: 1, why: "Levi’s Stadium is in Santa Clara, California." },
-    { q: "Kickoff is listed at what time (ET)?", options: ["4:25 p.m.", "6:30 p.m.", "8:15 p.m.", "7:00 p.m."], correct: 1, why: "Kickoff is 6:30 p.m. ET." },
-    { q: "Which TV network is airing Super Bowl LX (U.S.)?", options: ["FOX", "CBS", "NBC", "ESPN"], correct: 2, why: "Super Bowl LX is on NBC (and streaming on Peacock)." },
-    { q: "What’s the matchup for Super Bowl LX?", options: ["Seahawks vs Patriots", "Chiefs vs 49ers", "Rams vs Bills", "Packers vs Dolphins"], correct: 0, why: "It’s Seattle vs New England." },
-
-    { q: "This is a rematch of which Super Bowl (Seahawks vs Patriots)?", options: ["Super Bowl XLIII", "Super Bowl XLIX", "Super Bowl LIII", "Super Bowl LV"], correct: 1, why: "They previously met in Super Bowl XLIX." },
-    { q: "Who is the halftime show headliner for Super Bowl LX?", options: ["Taylor Swift", "Bad Bunny", "Beyoncé", "Drake"], correct: 1, why: "Bad Bunny is headlining the halftime show." },
-    { q: "Who is singing the U.S. National Anthem?", options: ["Charlie Puth", "Brandi Carlile", "Coco Jones", "Green Day"], correct: 0, why: "Charlie Puth is singing the national anthem." },
-    { q: "Who is performing “America the Beautiful”?", options: ["Green Day", "Brandi Carlile", "Charlie Puth", "Bad Bunny"], correct: 1, why: "Brandi Carlile is performing “America the Beautiful.”" },
-    { q: "Who is performing “Lift Every Voice and Sing”?", options: ["Coco Jones", "Brandi Carlile", "Charlie Puth", "Green Day"], correct: 0, why: "Coco Jones is performing “Lift Every Voice and Sing.”" },
-    { q: "Who is performing at the Super Bowl opening ceremony?", options: ["Green Day", "Bad Bunny", "Metallica", "Coldplay"], correct: 0, why: "Green Day is slated for the opening ceremony." },
-
-    { q: "Super Bowl LX uses Roman numerals. LX equals…", options: ["50", "55", "60", "65"], correct: 2, why: "LX = 60." },
-    { q: "Which conference champion are the Seahawks in this game?", options: ["AFC", "NFC", "Big Ten", "SEC"], correct: 1, why: "Seattle represents the NFC." },
-    { q: "Which conference champion are the Patriots in this game?", options: ["AFC", "NFC", "Big East", "ACC"], correct: 0, why: "New England represents the AFC." },
-
-    { q: "According to the game listing, who is the Seahawks head coach?", options: ["Pete Carroll", "Mike Macdonald", "Dan Campbell", "Kyle Shanahan"], correct: 1, why: "Seattle’s head coach is listed as Mike Macdonald." },
-    { q: "According to the game listing, who is the Patriots head coach?", options: ["Bill Belichick", "Mike Vrabel", "Sean McVay", "Andy Reid"], correct: 1, why: "New England’s head coach is listed as Mike Vrabel." },
-
-    { q: "Which team is listed as the betting favorite (spread)?", options: ["Patriots", "Seahawks", "Pick’em", "Not listed"], correct: 1, why: "Seattle is listed as the favorite." },
-    { q: "What’s the listed spread?", options: ["Seahawks by 1.5", "Seahawks by 4.5", "Patriots by 3.0", "Patriots by 6.5"], correct: 1, why: "The listing shows Seahawks by 4.5." },
-    { q: "What’s the general host region for Super Bowl LX?", options: ["Los Angeles Area", "San Francisco Bay Area", "Las Vegas Area", "Dallas–Fort Worth"], correct: 1, why: "Levi’s Stadium is in the San Francisco Bay Area." }
-  ];
-
-  // ====== STATE ======
-  const state = {
-    name: "",
-    team: "SEA", // SEA or NE
-    idx: 0,
-    answers: Array(QUESTIONS.length).fill(null),
-    startedAt: null,
-    finishedAt: null
-  };
-
-  // ====== DOM ======
-  const root = document.documentElement;
-
-  const btnSEA = document.getElementById("btnSEA");
-  const btnNE  = document.getElementById("btnNE");
-  const teamSub = document.getElementById("teamSub");
-
-  const screenStart = document.getElementById("screenStart");
-  const screenQuiz = document.getElementById("screenQuiz");
-  const screenResults = document.getElementById("screenResults");
-  const screenBoard = document.getElementById("screenBoard");
-
-  const playerName = document.getElementById("playerName");
-  const whoPill = document.getElementById("whoPill");
-  const bar = document.getElementById("bar");
-  const countPill = document.getElementById("countPill");
-  const qnum = document.getElementById("qnum");
-  const qtext = document.getElementById("qtext");
-  const optionsEl = document.getElementById("options");
-  const hint = document.getElementById("hint");
-
-  const footerHint = document.getElementById("footerHint");
-  const backBtn = document.getElementById("backBtn");
-  const nextBtn = document.getElementById("nextBtn");
-
-  const resultTitle = document.getElementById("resultTitle");
-  const resultSubtitle = document.getElementById("resultSubtitle");
-  const scoreLine = document.getElementById("scoreLine");
-  const gradeLine = document.getElementById("gradeLine");
-  const timeLine = document.getElementById("timeLine");
-  const review = document.getElementById("review");
-  const copyBtn = document.getElementById("copyBtn");
-  const viewBoardBtn = document.getElementById("viewBoardBtn");
-  const boardList = document.getElementById("boardList");
-  const clearBoardBtn = document.getElementById("clearBoardBtn");
-
-  // ====== THEME TOGGLE ======
-  function applyTeam(teamCode){
-    state.team = teamCode;
-
-    if(teamCode === "SEA"){
-      // Seahawks: navy + action green + wolf gray
-      root.style.setProperty("--teamName", "Seahawks");
-      root.style.setProperty("--a1", "#002244");
-      root.style.setProperty("--a2", "#69BE28");
-      root.style.setProperty("--a3", "#A5ACAF");
-      root.style.setProperty("--accent", "#69BE28");
-      root.style.setProperty("--danger", "#C60C30"); // keep red as contrast
-      btnSEA.classList.add("selected");
-      btnNE.classList.remove("selected");
-      teamSub.textContent = "Seahawks vibe selected ✅";
-    } else {
-      // Patriots: nautical navy + red + silver
-      root.style.setProperty("--teamName", "Patriots");
-      root.style.setProperty("--a1", "#002244");
-      root.style.setProperty("--a2", "#C60C30");
-      root.style.setProperty("--a3", "#B0B7BC");
-      root.style.setProperty("--accent", "#C60C30");
-      root.style.setProperty("--danger", "#69BE28"); // flip contrast
-      btnNE.classList.add("selected");
-      btnSEA.classList.remove("selected");
-      teamSub.textContent = "Patriots vibe selected ✅";
-    }
-
-    setTopUI();
-  }
-
-  btnSEA.addEventListener("click", ()=>applyTeam("SEA"));
-  btnNE.addEventListener("click", ()=>applyTeam("NE"));
-  btnSEA.addEventListener("keydown", (e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); applyTeam("SEA"); }});
-  btnNE.addEventListener("keydown", (e)=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); applyTeam("NE"); }});
-
-  // ====== HELPERS ======
-  const show = (el) => {
-    [screenStart, screenQuiz, screenResults, screenBoard].forEach(s => s.classList.remove("active"));
-    el.classList.add("active");
-  };
-
-  const formatTime = (ms) => {
-    const s = Math.max(0, Math.floor(ms / 1000));
-    const m = Math.floor(s / 60);
-    const r = s % 60;
-    return `${m}:${String(r).padStart(2,"0")}`;
-  };
-
-  const getScore = () => {
-    let score = 0;
-    for (let i=0;i<QUESTIONS.length;i++){
-      if (state.answers[i] === QUESTIONS[i].correct) score++;
-    }
-    return score;
-  };
-
-  const getGrade = (score) => {
-    const pct = score / QUESTIONS.length;
-    if (pct >= 0.95) return "Super Bowl Savant 🧠🏆";
-    if (pct >= 0.85) return "All-Pro 😤";
-    if (pct >= 0.70) return "Starter energy 🏈";
-    if (pct >= 0.55) return "Bench depth 😅";
-    return "Practice squad 🫠";
-  };
-
-  const setTopUI = () => {
-    const teamTag = state.team === "SEA" ? "SEA" : "NE";
-    whoPill.textContent = state.name ? `${state.name} · ${teamTag}` : `Ready · ${teamTag}`;
-
-    const total = QUESTIONS.length;
-    const currentShown = (screenQuiz.classList.contains("active") || screenResults.classList.contains("active")) ? Math.min(state.idx + 1, total) : 0;
-    countPill.textContent = `${Math.min(currentShown, total)}/${total}`;
-
-    const prog = screenQuiz.classList.contains("active") ? (state.idx / total)
-      : (screenResults.classList.contains("active") ? 1 : 0);
-    bar.style.width = `${Math.round(prog * 100)}%`;
-
-    footerHint.textContent =
-      screenStart.classList.contains("active") ? "Pick a team vibe + enter your name." :
-      screenQuiz.classList.contains("active") ? "Tap an answer, then Next." :
-      screenResults.classList.contains("active") ? "Score saved locally on this device." :
-      "Scoreboard view.";
-  };
-
-  const setFooterButtons = () => {
-    if (screenStart.classList.contains("active")) {
-      backBtn.disabled = true;
-      nextBtn.disabled = false;
-      nextBtn.textContent = "Start";
-      return;
-    }
-    if (screenQuiz.classList.contains("active")) {
-      backBtn.disabled = (state.idx === 0);
-      const picked = state.answers[state.idx] !== null;
-      nextBtn.disabled = !picked;
-      nextBtn.textContent = (state.idx === QUESTIONS.length - 1) ? "Finish" : "Next";
-      return;
-    }
-    if (screenResults.classList.contains("active")) {
-      backBtn.disabled = false;
-      nextBtn.disabled = false;
-      nextBtn.textContent = "Play again";
-      return;
-    }
-    if (screenBoard.classList.contains("active")) {
-      backBtn.disabled = false;
-      nextBtn.disabled = false;
-      nextBtn.textContent = "Back to results";
-      return;
-    }
-  };
-
-  const renderQuestion = () => {
-    const total = QUESTIONS.length;
-    const i = state.idx;
-    const q = QUESTIONS[i];
-
-    qnum.textContent = `Question ${i+1} of ${total}`;
-    qtext.textContent = q.q;
-
-    optionsEl.innerHTML = "";
-    hint.textContent = "";
-
-    q.options.forEach((opt, idx) => {
-      const label = document.createElement("label");
-      label.className = "opt" + (state.answers[i] === idx ? " selected" : "");
-      label.setAttribute("role", "button");
-
-      const radio = document.createElement("input");
-      radio.type = "radio";
-      radio.name = "opt";
-      radio.value = String(idx);
-      radio.checked = (state.answers[i] === idx);
-
-      const txt = document.createElement("div");
-      txt.className = "txt";
-      txt.textContent = opt;
-
-      label.appendChild(radio);
-      label.appendChild(txt);
-
-      const pick = () => {
-        state.answers[i] = idx;
-        hint.textContent = "Locked in ✅";
-        renderQuestion();
-        setFooterButtons();
-        setTopUI();
-      };
-
-      label.addEventListener("click", (e) => { e.preventDefault(); pick(); });
-      radio.addEventListener("change", pick);
-
-      optionsEl.appendChild(label);
-    });
-
-    setTopUI();
-    setFooterButtons();
-  };
-
-  // ====== SCOREBOARD (localStorage) ======
-  const BOARD_KEY = "sblx_quiz_scoreboard_v2";
-
-  const loadBoard = () => {
-    try { return JSON.parse(localStorage.getItem(BOARD_KEY) || "[]"); }
-    catch { return []; }
-  };
-
-  const saveBoard = (arr) => localStorage.setItem(BOARD_KEY, JSON.stringify(arr));
-
-  const addToBoard = (entry) => {
-    const board = loadBoard();
-    board.push(entry);
-    board.sort((a,b) => (b.score - a.score) || (a.timeMs - b.timeMs));
-    saveBoard(board.slice(0, 25));
-  };
-
-  const renderBoard = () => {
-    const board = loadBoard();
-    if (!board.length) {
-      boardList.innerHTML = `<div class="reviewItem"><b>No scores yet.</b><div class="small">Take the quiz to start the board.</div></div>`;
-      return;
-    }
-    boardList.innerHTML = board.map((e, idx) => {
-      const medal = idx===0 ? "🥇" : idx===1 ? "🥈" : idx===2 ? "🥉" : "🏈";
-      return `
-        <div class="reviewItem">
-          <div style="display:flex; justify-content:space-between; gap:10px; align-items:center;">
-            <div><b>${medal} ${escapeHtml(e.name || "Anonymous")} · ${escapeHtml(e.team)}</b></div>
-            <div class="tiny">${e.score}/20 · ${formatTime(e.timeMs)}</div>
-          </div>
-          <div class="small">${new Date(e.at).toLocaleString()}</div>
-        </div>
-      `;
-    }).join("");
-  };
-
-  const escapeHtml = (s) =>
-    String(s).replace(/[&<>"']/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[c]));
-
-  // ====== RESULTS ======
-  const renderResults = () => {
-    const score = getScore();
-    const timeMs = (state.finishedAt - state.startedAt);
-    const grade = getGrade(score);
-
-    const teamLabel = state.team === "SEA" ? "SEA" : "NE";
-    resultTitle.textContent = `Done, ${state.name || "legend"}!`;
-    resultSubtitle.textContent = `Team vibe: ${teamLabel}. Scroll for the answer review.`;
-
-    scoreLine.textContent = `Score: ${score}/${QUESTIONS.length}`;
-    gradeLine.textContent = `Grade: ${grade}`;
-    timeLine.textContent = `Time: ${formatTime(timeMs)}`;
-
-    review.innerHTML = QUESTIONS.map((q, i) => {
-      const picked = state.answers[i];
-      const correct = q.correct;
-      const ok = picked === correct;
-
-      const pickedText = picked === null ? "No answer" : q.options[picked];
-      const correctText = q.options[correct];
-
-      return `
-        <div class="reviewItem">
-          <div><b>${i+1}. ${escapeHtml(q.q)}</b></div>
-          <div class="small">
-            Your answer: <span class="${ok ? "ok":"no"}"><b>${escapeHtml(pickedText)}</b></span><br/>
-            Correct: <span class="ok"><b>${escapeHtml(correctText)}</b></span><br/>
-            ${escapeHtml(q.why || "")}
-          </div>
-        </div>
-      `;
-    }).join("");
-
-    addToBoard({
-      name: state.name || "Anonymous",
-      team: teamLabel,
-      score,
-      timeMs,
-      at: Date.now()
-    });
-
-    setTopUI();
-    setFooterButtons();
-  };
-
-  // ====== FLOW ======
-  const startQuiz = () => {
-    const name = (playerName.value || "").trim();
-    state.name = name || "Anonymous";
-    state.idx = 0;
-    state.answers = Array(QUESTIONS.length).fill(null);
-    state.startedAt = Date.now();
-    state.finishedAt = null;
-
-    show(screenQuiz);
-    renderQuestion();
-  };
-
-  const next = () => {
-    if (screenStart.classList.contains("active")) {
-      startQuiz();
-      return;
-    }
-
-    if (screenQuiz.classList.contains("active")) {
-      if (state.answers[state.idx] === null) return;
-
-      if (state.idx === QUESTIONS.length - 1) {
-        state.finishedAt = Date.now();
-        show(screenResults);
-        renderResults();
-        return;
-      }
-
-      state.idx++;
-      renderQuestion();
-      return;
-    }
-
-    if (screenResults.classList.contains("active")) {
-      show(screenStart);
-      playerName.value = (state.name === "Anonymous") ? "" : state.name;
-      setTopUI();
-      setFooterButtons();
-      return;
-    }
-
-    if (screenBoard.classList.contains("active")) {
-      show(screenResults);
-      setTopUI();
-      setFooterButtons();
-      return;
-    }
-  };
-
-  const back = () => {
-    if (screenQuiz.classList.contains("active")) {
-      if (state.idx > 0) state.idx--;
-      renderQuestion();
-      return;
-    }
-
-    if (screenResults.classList.contains("active")) {
-      show(screenQuiz);
-      state.idx = QUESTIONS.length - 1;
-      renderQuestion();
-      return;
-    }
-
-    if (screenBoard.classList.contains("active")) {
-      show(screenResults);
-      setTopUI();
-      setFooterButtons();
-      return;
-    }
-  };
-
-  // ✅ Mobile-safe Start behavior (required fix)
-  nextBtn.addEventListener("click", () => {
-    if (screenStart.classList.contains("active")) startQuiz();
-    else next();
-  });
-
-  // ✅ Mobile Enter behavior (recommended fix)
-  playerName.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      startQuiz();
-    }
-  });
-
-  backBtn.addEventListener("click", back);
-
-  copyBtn.addEventListener("click", async () => {
-    const score = getScore();
-    const timeMs = (state.finishedAt - state.startedAt);
-    const grade = getGrade(score);
-    const teamTag = state.team === "SEA" ? "SEA" : "NE";
-    const msg = `🏈 Super Bowl LX Quiz (${teamTag}): I scored ${score}/20 in ${formatTime(timeMs)} — ${grade}. Beat that.`;
-    try {
-      await navigator.clipboard.writeText(msg);
-      copyBtn.textContent = "Copied!";
-      setTimeout(() => copyBtn.textContent = "Copy", 900);
-    } catch {
-      alert("Couldn’t copy automatically. Here it is:\n\n" + msg);
-    }
-  });
-
-  viewBoardBtn.addEventListener("click", () => {
-    show(screenBoard);
-    renderBoard();
-    setTopUI();
-    setFooterButtons();
-  });
-
-  clearBoardBtn.addEventListener("click", () => {
-    if (!confirm("Clear the local scoreboard on this device?")) return;
-    localStorage.removeItem(BOARD_KEY);
-    renderBoard();
-  });
-
-  // keyboard nav (nice on laptops)
-  document.addEventListener("keydown", (e) => {
-    if (!screenQuiz.classList.contains("active")) return;
-
-    if (e.key === "ArrowLeft") back();
-    if (e.key === "ArrowRight") next();
-
-    const digit = Number(e.key);
-    if (digit >= 1 && digit <= 4) {
-      const idx = digit - 1;
-      const q = QUESTIONS[state.idx];
-      if (q && q.options[idx] !== undefined) {
-        state.answers[state.idx] = idx;
-        renderQuestion();
-        hint.textContent = "Locked in ✅";
-      }
-    }
-  });
-
-  // init
-  applyTeam("SEA");
-  setTopUI();
-  setFooterButtons();
-})();
+/* ================= CONFIG ================= */
+const SCOREBOARD_ENDPOINT =
+"https://script.google.com/macros/s/AKfycbwvJFpBvHS2sgwU_mAu_BtO1DMRkNcU-b-RV0xbVcj_nBdRWRNrgcNbYySqnwXHDBaP/exec";
+
+/* ================= QUIZ ================= */
+const QUESTIONS=[
+{q:"Super Bowl LX is played on what date?",o:["Feb 2","Feb 8","Feb 14","Jan 26"],c:1},
+{q:"Which stadium hosts Super Bowl LX?",o:["SoFi","Levi’s","Allegiant","AT&T"],c:1},
+{q:"Super Bowl LX city?",o:["San Francisco","Santa Clara","Oakland","San Jose"],c:1},
+{q:"Kickoff time (ET)?",o:["4:25","6:30","8:15","7:00"],c:1},
+{q:"Broadcast network?",o:["FOX","CBS","NBC","ESPN"],c:2},
+{q:"Matchup?",o:["Seahawks vs Patriots","Chiefs vs 49ers","Rams vs Bills","Packers vs Dolphins"],c:0},
+{q:"Roman numeral LX equals?",o:["50","55","60","65"],c:2},
+{q:"Which conference are Seahawks?",o:["AFC","NFC","ACC","SEC"],c:1},
+{q:"Which conference are Patriots?",o:["AFC","NFC","Big East","Pac-12"],c:0},
+{q:"How many points for a TD?",o:["3","5","6","7"],c:2}
+];
+
+let state={name:"",team:"SEA",idx:0,answers:[],start:0};
+
+const qs=id=>document.getElementById(id);
+const show=id=>["screenStart","screenQuiz","screenResults","screenBoard"].forEach(s=>qs(s).classList.toggle("active",s===id));
+
+function applyTeam(t){
+state.team=t;
+if(t==="SEA"){document.documentElement.style.setProperty("--accent","#69BE28")}
+else{document.documentElement.style.setProperty("--accent","#C60C30")}
+qs("btnSEA").classList.toggle("selected",t==="SEA");
+qs("btnNE").classList.toggle("selected",t==="NE");
+}
+
+qs("btnSEA").onclick=()=>applyTeam("SEA");
+qs("btnNE").onclick=()=>applyTeam("NE");
+
+function render(){
+const q=QUESTIONS[state.idx];
+qs("qnum").textContent=`Question ${state.idx+1} of ${QUESTIONS.length}`;
+qs("qtext").textContent=q.q;
+qs("options").innerHTML="";
+q.o.forEach((t,i)=>{
+const d=document.createElement("div");
+d.className="opt"+(state.answers[state.idx]===i?" selected":"");
+d.textContent=t;
+d.onclick=()=>{state.answers[state.idx]=i;render()};
+qs("options").appendChild(d);
+});
+qs("countPill").textContent=`${state.idx+1}/${QUESTIONS.length}`;
+qs("bar").style.width=`${(state.idx/QUESTIONS.length)*100}%`;
+qs("nextBtn").textContent=state.idx===QUESTIONS.length-1?"Finish":"Next";
+qs("backBtn").disabled=state.idx===0;
+}
+
+async function saveScore(score,time){
+await fetch(SCOREBOARD_ENDPOINT,{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify({name:state.name,team:state.team,score,timeMs:time})
+});
+}
+
+async function loadBoard(){
+const r=await fetch(SCOREBOARD_ENDPOINT);
+const d=await r.json();
+qs("boardList").innerHTML=d.leaderboard.map((e,i)=>`
+<div class="reviewItem">
+<b>${i+1}. ${e.name} (${e.team})</b>
+<div class="small">${e.score}/10</div>
+</div>`).join("");
+}
+
+qs("nextBtn").onclick=()=>{
+if(qs("screenStart").classList.contains("active")){
+state.name=qs("playerName").value||"Anonymous";
+state.idx=0;state.answers=[];state.start=Date.now();
+show("screenQuiz");render();return;
+}
+if(qs("screenQuiz").classList.contains("active")){
+if(state.answers[state.idx]==null)return;
+if(state.idx===QUESTIONS.length-1){
+const score=state.answers.filter((a,i)=>a===QUESTIONS[i].c).length;
+const time=Date.now()-state.start;
+saveScore(score,time);
+qs("resultTitle").textContent=`Done, ${state.name}!`;
+qs("scoreLine").textContent=`Score: ${score}/${QUESTIONS.length}`;
+show("screenResults");
+return;
+}
+state.idx++;render();
+}
+};
+
+qs("backBtn").onclick=()=>{state.idx--;render()};
+qs("viewBoardBtn").onclick=()=>{show("screenBoard");loadBoard()};
 </script>
+
 </body>
 </html>
