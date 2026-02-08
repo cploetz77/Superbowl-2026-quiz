@@ -1,0 +1,593 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Super Bowl Party Quiz</title>
+  <style>
+    :root{
+      --bg: #0b1020;
+      --card: rgba(255,255,255,0.08);
+      --card2: rgba(255,255,255,0.12);
+      --text: rgba(255,255,255,0.92);
+      --muted: rgba(255,255,255,0.68);
+      --accent: #35d0c7;
+      --danger: #ff5c7a;
+      --ring: rgba(53,208,199,0.35);
+      --shadow: 0 18px 50px rgba(0,0,0,0.45);
+      --radius: 18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background:
+        radial-gradient(1200px 800px at 10% 10%, rgba(53,208,199,0.18), transparent 55%),
+        radial-gradient(1000px 700px at 90% 20%, rgba(255,92,122,0.14), transparent 55%),
+        radial-gradient(900px 700px at 40% 90%, rgba(255,255,255,0.06), transparent 55%),
+        var(--bg);
+      color: var(--text);
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+    }
+    .wrap{width:min(760px, 100%);}
+    .card{
+      background: linear-gradient(180deg, var(--card), rgba(255,255,255,0.05));
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .topbar{
+      padding:16px 18px;
+      display:flex;
+      gap:12px;
+      align-items:center;
+      justify-content:space-between;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+      background: rgba(0,0,0,0.18);
+    }
+    .brand{
+      display:flex; align-items:center; gap:10px; min-width:0;
+    }
+    .logo{
+      width:34px; height:34px; border-radius:12px;
+      background: radial-gradient(circle at 30% 30%, rgba(53,208,199,0.95), rgba(53,208,199,0.25));
+      border:1px solid rgba(255,255,255,0.18);
+      box-shadow: 0 0 0 6px rgba(53,208,199,0.10);
+    }
+    .brand h1{
+      font-size:14px; margin:0; letter-spacing:0.08em; text-transform:uppercase;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .meta{
+      font-size:12px; color: var(--muted);
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap; justify-content:flex-end;
+    }
+    .pill{
+      padding:6px 10px; border-radius:999px;
+      background: rgba(255,255,255,0.08);
+      border:1px solid rgba(255,255,255,0.12);
+    }
+    .progress{
+      height:8px; width:180px; border-radius:999px;
+      background: rgba(255,255,255,0.08);
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,0.12);
+    }
+    .bar{
+      height:100%;
+      width:0%;
+      background: linear-gradient(90deg, rgba(53,208,199,0.9), rgba(53,208,199,0.35));
+      transition: width 260ms ease;
+    }
+    .body{
+      padding:20px;
+    }
+    .screen{
+      display:none;
+      animation: fadeIn 160ms ease;
+    }
+    .screen.active{display:block;}
+    @keyframes fadeIn{
+      from{opacity:0; transform:translateY(6px);}
+      to{opacity:1; transform:translateY(0);}
+    }
+
+    .title{font-size:26px; margin:0 0 8px;}
+    .subtitle{margin:0 0 16px; color:var(--muted); line-height:1.45;}
+    .field{
+      display:flex; flex-direction:column; gap:8px; margin-top:14px;
+    }
+    label{font-size:12px; color:var(--muted); letter-spacing:0.06em; text-transform:uppercase;}
+    input[type="text"]{
+      width:100%;
+      padding:14px 14px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.25);
+      color: var(--text);
+      outline:none;
+      box-shadow: 0 0 0 0 rgba(53,208,199,0);
+      transition: box-shadow 160ms ease, border-color 160ms ease;
+      font-size:16px;
+    }
+    input[type="text"]:focus{
+      border-color: rgba(53,208,199,0.55);
+      box-shadow: 0 0 0 6px var(--ring);
+    }
+
+    .qnum{
+      font-size:12px; color: var(--muted); letter-spacing:0.08em; text-transform:uppercase;
+      margin-bottom:8px;
+    }
+    .qtext{
+      font-size:22px;
+      margin:0 0 14px;
+      line-height:1.25;
+    }
+    .options{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:8px;
+    }
+    .opt{
+      display:flex;
+      align-items:flex-start;
+      gap:10px;
+      padding:14px 14px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.22);
+      cursor:pointer;
+      user-select:none;
+      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease;
+    }
+    .opt:hover{ transform: translateY(-1px); border-color: rgba(255,255,255,0.22); background: rgba(255,255,255,0.06); }
+    .opt input{ margin-top:3px; accent-color: var(--accent); }
+    .opt .txt{ line-height:1.3; }
+    .hint{
+      margin-top:12px;
+      font-size:13px;
+      color: var(--muted);
+      min-height:18px;
+    }
+
+    .footer{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      justify-content:space-between;
+      padding:16px 20px;
+      border-top:1px solid rgba(255,255,255,0.10);
+      background: rgba(0,0,0,0.18);
+      flex-wrap:wrap;
+    }
+    .btns{display:flex; gap:10px; align-items:center;}
+    button{
+      border:0;
+      border-radius:14px;
+      padding:12px 14px;
+      font-weight:650;
+      cursor:pointer;
+      color: var(--text);
+      background: rgba(255,255,255,0.10);
+      border:1px solid rgba(255,255,255,0.14);
+      transition: transform 120ms ease, background 120ms ease, border-color 120ms ease, opacity 120ms ease;
+    }
+    button:hover{ transform: translateY(-1px); background: rgba(255,255,255,0.14); border-color: rgba(255,255,255,0.20); }
+    button:disabled{ opacity:0.45; cursor:not-allowed; transform:none; }
+    .primary{
+      background: linear-gradient(90deg, rgba(53,208,199,0.95), rgba(53,208,199,0.35));
+      border-color: rgba(53,208,199,0.40);
+      color: rgba(10,14,28,0.95);
+    }
+    .primary:hover{ background: linear-gradient(90deg, rgba(53,208,199,0.98), rgba(53,208,199,0.45)); }
+    .danger{
+      background: rgba(255,92,122,0.18);
+      border-color: rgba(255,92,122,0.32);
+    }
+
+    .resultsGrid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+      margin-top:14px;
+    }
+    .stat{
+      padding:14px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.22);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+    }
+    .stat strong{font-size:16px;}
+    .stat span{color:var(--muted); font-size:13px;}
+    .review{
+      margin-top:14px;
+      padding:14px;
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,0.14);
+      background: rgba(0,0,0,0.22);
+      max-height: 260px;
+      overflow:auto;
+    }
+    .reviewItem{
+      padding:10px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.10);
+    }
+    .reviewItem:last-child{border-bottom:0;}
+    .reviewItem .small{font-size:12px; color:var(--muted); margin-top:4px; line-height:1.35;}
+    .ok{color: rgba(53,208,199,0.95);}
+    .no{color: rgba(255,92,122,0.95);}
+
+    .tiny{font-size:12px; color:var(--muted);}
+    a{color: rgba(53,208,199,0.95);}
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <h1>Super Bowl Party Quiz</h1>
+        </div>
+
+        <div class="meta">
+          <div class="pill" id="whoPill">Ready</div>
+          <div class="progress" aria-label="Progress">
+            <div class="bar" id="bar"></div>
+          </div>
+          <div class="pill" id="countPill">0/20</div>
+        </div>
+      </div>
+
+      <div class="body">
+        <!-- START -->
+        <section class="screen active" id="screenStart">
+          <h2 class="title">Scan. Tap. Brag. 🏈</h2>
+          <p class="subtitle">
+            20 questions. One at a time. Fast and fun.
+            At the end you’ll get your score + a shareable message for group chat.
+          </p>
+
+          <div class="field">
+            <label for="playerName">Your name (for the scoreboard)</label>
+            <input id="playerName" type="text" placeholder="e.g., Chris / The Snack King / Aunt Linda" maxlength="30" />
+            <div class="tiny">Tip: hit <b>Enter</b> to start.</div>
+          </div>
+        </section>
+
+        <!-- QUIZ -->
+        <section class="screen" id="screenQuiz">
+          <div class="qnum" id="qnum">Question 1 of 20</div>
+          <h3 class="qtext" id="qtext">Question text</h3>
+          <div class="options" id="options"></div>
+          <div class="hint" id="hint"></div>
+        </section>
+
+        <!-- RESULTS -->
+        <section class="screen" id="screenResults">
+          <h2 class="title" id="resultTitle">You finished!</h2>
+          <p class="subtitle" id="resultSubtitle"></p>
+
+          <div class="resultsGrid">
+            <div class="stat">
+              <div>
+                <strong id="scoreLine">Score: 0/20</strong><br />
+                <span id="gradeLine">Grade: —</span>
+              </div>
+              <div class="pill" id="timeLine">Time: —</div>
+            </div>
+
+            <div class="stat">
+              <div>
+                <strong>Share</strong><br />
+                <span>Copy a message to flex (or roast yourself).</span>
+              </div>
+              <button class="primary" id="copyBtn">Copy</button>
+            </div>
+
+            <div class="stat">
+              <div>
+                <strong>Local scoreboard</strong><br />
+                <span>Saved on this device (great for the host’s phone).</span>
+              </div>
+              <button id="viewBoardBtn">View</button>
+            </div>
+          </div>
+
+          <div class="review" id="review"></div>
+
+          <div style="margin-top:14px;" class="tiny">
+            Host tip: keep this page open on your phone, hit “View” to show the scoreboard.
+          </div>
+        </section>
+
+        <!-- SCOREBOARD -->
+        <section class="screen" id="screenBoard">
+          <h2 class="title">Scoreboard 🏆</h2>
+          <p class="subtitle">Top scores on <b>this device</b>. (If you want a true shared scoreboard, tell me and I’ll add a free backend.)</p>
+
+          <div class="review" id="boardList"></div>
+
+          <div class="tiny" style="margin-top:12px;">
+            <button class="danger" id="clearBoardBtn">Clear scoreboard</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="footer">
+        <div class="tiny" id="footerHint">Ready when you are.</div>
+        <div class="btns">
+          <button id="backBtn" disabled>Back</button>
+          <button class="primary" id="nextBtn">Start</button>
+        </div>
+      </div>
+    </div>
+
+    <p class="tiny" style="margin:14px 2px 0;">
+      Want your party name/logo on this? Tell me the vibe and I’ll reskin it.
+    </p>
+  </div>
+
+<script>
+(() => {
+  // ====== QUIZ DATA (20 Qs) ======
+  // correct is the index in options[]
+  const QUESTIONS = [
+    {
+      q: "What do the winning team’s players traditionally get after the Super Bowl?",
+      options: ["A gold medal", "A championship ring", "A Lombardi bracelet", "A trophy replica"],
+      correct: 1,
+      why: "The championship ring is the classic keepsake for players and staff."
+    },
+    {
+      q: "What is the Super Bowl trophy called?",
+      options: ["The Heisman Trophy", "The Vince Lombardi Trophy", "The George Halas Trophy", "The Walter Payton Trophy"],
+      correct: 1,
+      why: "The Super Bowl trophy is the Vince Lombardi Trophy."
+    },
+    {
+      q: "How many minutes are in a standard NFL quarter (game clock)?",
+      options: ["10", "12", "15", "20"],
+      correct: 2,
+      why: "NFL quarters are 15 minutes each (game clock)."
+    },
+    {
+      q: "Which game was the first Super Bowl (retroactively named Super Bowl I)?",
+      options: ["Packers vs Chiefs", "Cowboys vs Dolphins", "Steelers vs Rams", "Raiders vs Vikings"],
+      correct: 0,
+      why: "Super Bowl I was Packers vs Chiefs."
+    },
+    {
+      q: "Super Bowl I was played on what date?",
+      options: ["January 15, 1967", "February 2, 1969", "January 9, 1966", "February 6, 1972"],
+      correct: 0,
+      why: "It was played January 15, 1967."
+    },
+    {
+      q: "What was the final score of Super Bowl I?",
+      options: ["21–17", "35–10", "28–24", "14–7"],
+      correct: 1,
+      why: "Packers beat the Chiefs 35–10."
+    },
+    {
+      q: "Which team has (tied for) the most Super Bowl wins?",
+      options: ["Dallas Cowboys", "New England Patriots", "Green Bay Packers", "San Francisco 49ers"],
+      correct: 1,
+      why: "The Patriots are tied for the most wins (6)."
+    },
+    {
+      q: "The Super Bowl is played for the championship of which league?",
+      options: ["MLB", "NBA", "NFL", "NHL"],
+      correct: 2,
+      why: "It’s the NFL championship game."
+    },
+    {
+      q: "How many points is a touchdown worth?",
+      options: ["3", "5", "6", "7"],
+      correct: 2,
+      why: "A touchdown is 6 points (extra point/2-point attempt is separate)."
+    },
+    {
+      q: "How many points is a field goal worth?",
+      options: ["1", "2", "3", "6"],
+      correct: 2,
+      why: "Field goals are worth 3 points."
+    },
+    {
+      q: "Which of these is NOT an NFL penalty?",
+      options: ["Offsides", "Holding", "Icing", "Pass interference"],
+      correct: 2,
+      why: "“Icing” is a hockey thing, not an NFL penalty."
+    },
+    {
+      q: "If a team scores a touchdown, how many points is the extra point kick worth?",
+      options: ["1", "2", "3", "6"],
+      correct: 0,
+      why: "A standard extra point kick is 1 point."
+    },
+    {
+      q: "What do the letters in “NFL” stand for?",
+      options: ["National Football League", "National Federation League", "North Football League", "New Football League"],
+      correct: 0,
+      why: "National Football League."
+    },
+    {
+      q: "Super Bowl LVIII (2024) was played in which state?",
+      options: ["California", "Arizona", "Nevada", "Florida"],
+      correct: 2,
+      why: "It was in Nevada (Allegiant Stadium)."
+    },
+    {
+      q: "Super Bowl LVIII (2024) ended with which final score?",
+      options: ["Chiefs 31–49ers 28", "Chiefs 25–49ers 22", "49ers 27–Chiefs 24", "49ers 20–Chiefs 17"],
+      correct: 1,
+      why: "Chiefs 25–49ers 22 (overtime)."
+    },
+    {
+      q: "What’s the maximum number of points you can score on a single play in the NFL?",
+      options: ["6", "7", "8", "9"],
+      correct: 2,
+      why: "A touchdown (6) + 2-point conversion (2) = 8."
+    },
+    {
+      q: "What’s it called when the QB throws the ball forward to a teammate?",
+      options: ["A punt", "A handoff", "A forward pass", "A lateral"],
+      correct: 2,
+      why: "That’s a forward pass."
+    },
+    {
+      q: "What is the ‘red zone’?",
+      options: [
+        "Anywhere past midfield",
+        "Inside the opponent’s 20-yard line",
+        "Inside your own 10-yard line",
+        "The area where coaches stand"
+      ],
+      correct: 1,
+      why: "The red zone is inside the opponent’s 20."
+    },
+    {
+      q: "How many yards is a first down?",
+      options: ["5", "10", "15", "20"],
+      correct: 1,
+      why: "You need 10 yards to gain a first down (usually)."
+    },
+    {
+      q: "What happens if the defense intercepts the ball?",
+      options: [
+        "The play stops immediately",
+        "The offense keeps the ball but loses downs",
+        "The defense takes possession and can return it",
+        "It’s a replay of down"
+      ],
+      correct: 2,
+      why: "The defense gets the ball and can return it."
+    }
+  ];
+
+  // ====== STATE ======
+  const state = {
+    name: "",
+    idx: 0,
+    answers: Array(QUESTIONS.length).fill(null),
+    startedAt: null,
+    finishedAt: null
+  };
+
+  // ====== DOM ======
+  const screenStart = document.getElementById("screenStart");
+  const screenQuiz = document.getElementById("screenQuiz");
+  const screenResults = document.getElementById("screenResults");
+  const screenBoard = document.getElementById("screenBoard");
+
+  const playerName = document.getElementById("playerName");
+  const whoPill = document.getElementById("whoPill");
+  const bar = document.getElementById("bar");
+  const countPill = document.getElementById("countPill");
+  const qnum = document.getElementById("qnum");
+  const qtext = document.getElementById("qtext");
+  const optionsEl = document.getElementById("options");
+  const hint = document.getElementById("hint");
+
+  const footerHint = document.getElementById("footerHint");
+  const backBtn = document.getElementById("backBtn");
+  const nextBtn = document.getElementById("nextBtn");
+
+  const resultTitle = document.getElementById("resultTitle");
+  const resultSubtitle = document.getElementById("resultSubtitle");
+  const scoreLine = document.getElementById("scoreLine");
+  const gradeLine = document.getElementById("gradeLine");
+  const timeLine = document.getElementById("timeLine");
+  const review = document.getElementById("review");
+  const copyBtn = document.getElementById("copyBtn");
+  const viewBoardBtn = document.getElementById("viewBoardBtn");
+  const boardList = document.getElementById("boardList");
+  const clearBoardBtn = document.getElementById("clearBoardBtn");
+
+  // ====== HELPERS ======
+  const show = (el) => {
+    [screenStart, screenQuiz, screenResults, screenBoard].forEach(s => s.classList.remove("active"));
+    el.classList.add("active");
+  };
+
+  const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
+
+  const formatTime = (ms) => {
+    const s = Math.max(0, Math.floor(ms / 1000));
+    const m = Math.floor(s / 60);
+    const r = s % 60;
+    return `${m}:${String(r).padStart(2,"0")}`;
+  };
+
+  const getScore = () => {
+    let score = 0;
+    for (let i=0;i<QUESTIONS.length;i++){
+      if (state.answers[i] === QUESTIONS[i].correct) score++;
+    }
+    return score;
+  };
+
+  const getGrade = (score) => {
+    const pct = score / QUESTIONS.length;
+    if (pct >= 0.95) return "GOAT status 🐐";
+    if (pct >= 0.85) return "All-Pro 🥇";
+    if (pct >= 0.70) return "Playoff team 😤";
+    if (pct >= 0.55) return "Wild card energy 😅";
+    return "Rebuild year 🫠";
+  };
+
+  const setTopUI = () => {
+    const total = QUESTIONS.length;
+    const answered = state.answers.filter(v => v !== null).length;
+    const currentShown = (screenQuiz.classList.contains("active") || screenResults.classList.contains("active")) ? clamp(state.idx + 1, 0, total) : 0;
+
+    countPill.textContent = `${Math.min(currentShown, total)}/${total}`;
+    const prog = screenQuiz.classList.contains("active") ? ((state.idx) / total) : (screenResults.classList.contains("active") ? 1 : 0);
+    bar.style.width = `${Math.round(prog * 100)}%`;
+
+    whoPill.textContent = state.name ? state.name : "Ready";
+    footerHint.textContent = screenStart.classList.contains("active")
+      ? "Enter your name and hit Start."
+      : screenQuiz.classList.contains("active")
+        ? "Tap an answer, then Next."
+        : screenResults.classList.contains("active")
+          ? "Score saved locally on this device."
+          : "Scoreboard view.";
+  };
+
+  const setFooterButtons = () => {
+    if (screenStart.classList.contains("active")) {
+      backBtn.disabled = true;
+      nextBtn.disabled = false;
+      nextBtn.textContent = "Start";
+      return;
+    }
+    if (screenQuiz.classList.contains("active")) {
+      backBtn.disabled = (state.idx === 0);
+      const picked = state.answers[state.idx] !== null;
+      nextBtn.disabled = !picked;
+      nextBtn.textContent = (state.idx === QUESTIONS.length - 1) ? "Finish" : "Next";
+      return;
+    }
+    if (screenResults.classList.contains("active")) {
+      backBtn.disabled = false;
+      nextBtn.disabled = false;
+      nextBtn.textContent = "Play again";
+      return;
+    }
+    if (screenBoard.classList.contains("active")) {
+      backBtn.disabled = false;
+      nextBtn.disabled = false;
+      nextBtn
